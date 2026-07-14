@@ -69,11 +69,19 @@ export async function request<T>(
     if (t) headers.Authorization = `Bearer ${t}`;
   }
 
-  const res = await fetch(`${API_BASE}${path}`, {
-    method,
-    headers,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE}${path}`, {
+      method,
+      headers,
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+  } catch {
+    throw new ApiError(
+      0,
+      `Cannot reach the CPACE Mobile API at ${API_BASE}. Make sure start-api.bat is running and your phone is on the same Wi-Fi.`,
+    );
+  }
 
   let json: any = null;
   try {
